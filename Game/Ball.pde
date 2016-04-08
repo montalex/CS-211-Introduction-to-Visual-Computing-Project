@@ -91,10 +91,10 @@ class Ball {
      PVector Vdist = new PVector(location.x - cylinder.location.x, location.z - cylinder.location.z);
      float distance = Vdist.mag();
      if(distance <= ballRadius + cylinder.cylinderRadius){
+       location.x = location.x + Vdist.x  / (ballRadius+cylinder.cylinderRadius);
+       location.z = location.z + Vdist.z / (ballRadius+cylinder.cylinderRadius);
        PVector normal = new PVector(location.x - cylinder.location.x, 0, location.z - cylinder.location.z).normalize();
        velocity = PVector.sub(velocity, normal.mult(PVector.dot(velocity, normal) * 2));
-       location.x = location.x;
-       location.z = location.z;
      }
    }
 }

@@ -73,6 +73,11 @@ class Cylinder {
   }
   
   boolean isOverlap(ArrayList<Cylinder> list){
+    PVector vDistBall = new PVector(location.x - ball.location.x, location.z - ball.location.z);
+    float distBall = vDistBall.mag();
+    if(distBall <= cylinderRadius + ball.ballRadius){
+      return true;
+    }
     for(int i = 0; i < list.size(); ++i){
        PVector vDist = new PVector(location.x - list.get(i).location.x, location.z - list.get(i).location.z);
        float dist = vDist.mag();
