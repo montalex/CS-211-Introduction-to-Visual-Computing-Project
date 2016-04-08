@@ -1,15 +1,20 @@
+/*
+* Represent the ball on the playing board.
+*/
 class Ball {
-  private PVector location; // Coordinate vector of ball
-  private PVector velocity; // Velocity vector of ball
-  private PVector gravity; // Gravity vector
-  private PVector friction; // Friction vector
-  private float ballRadius; // Ball radius
-  private final float GRAVITY = 0.1; // Gravity constant
-  private final float REBOUND_COEF = 0.5; // Rebound coeeficient
-  private final float normalForce = 1;
-  private final float mu = 0.01;
-  private final float frictionMagnitude = normalForce * mu;
+  private PVector location; // Coordinate vector of ball.
+  private PVector velocity; // Velocity vector of ball.
+  private PVector gravity; // Gravity vector.
+  private PVector friction; // Friction vector.
+  private float ballRadius; // Ball radius.
+  private final float GRAVITY = 0.15; // Gravity constant.
+  private final float REBOUND_COEF = 0.5; // Rebound coeeficient.
+  private final float frictionMagnitude = 0.01; // Friction force magnitude = normal Force * mu (1 * 0.01).
   
+  /* 
+  * Create a new Ball object, initialize his
+  * location (on the center of board), velocity and gravity.
+  */
   Ball(){
     ballRadius = 20; 
     location = new PVector(0, - (ballRadius + board.boardThik/2), 0);
@@ -17,6 +22,10 @@ class Ball {
     gravity = new PVector(0, 0, 0);
   }
   
+  /*
+  * Update all forces that influence ball movements
+  * Friction, gravity, velocity and the location vector.
+  */
   void update(Board b) {
     friction = velocity.copy();
     friction.mult(-1);
@@ -28,14 +37,36 @@ class Ball {
     location.add(velocity);
   }
   
+  /*
+  * Display ball on screen
+  */
   void display() {
+    pushMatrix();
     noStroke();
     fill(210, 0, 0);
     lights();
     translate(location.x, location.y, location.z);
     sphere(ballRadius);
+    popMatrix();
    }
    
+  /*
+  * Special display when SHIFT is pressed
+  * Seen from above.
+  */
+   void shiftDisplay(){
+     pushMatrix();
+     noStroke();
+     fill(210, 0, 0);
+     lights();
+     translate(location.x, -(ballRadius + board.boardThik/2), location.z);
+     sphere(ballRadius);
+     popMatrix();
+   }
+   
+   /*
+   * Makes sure that ball stay on the plate's surface.
+   */
    void checkEdges() {
      if(location.x > board.boardSize/2) {
        velocity.x = velocity.x * -REBOUND_COEF;
@@ -50,6 +81,20 @@ class Ball {
      } else if(location.z < -board.boardSize/2){
         velocity.z = velocity.z * -REBOUND_COEF;
         location.z = -board.boardSize/2;
+     }
+   }
+   
+   /*
+   * Makes sure the ball bounces off the cylinders.
+   */
+   void checkCylinderCollision(Cylinder cylinder){
+     PVector Vdist = new PVector(location.x - cylinder.location.x, location.z - cylinder.location.z);
+     float distance = Vdist.mag();
+     if(distance <= ballRadius + cylinder.cylinderRadius){
+       PVector normal = new PVector(location.x - cylinder.location.x, 0, location.z - cylinder.location.z).normalize();
+       velocity = PVector.sub(velocity, normal.mult(PVector.dot(velocity, normal) * 2));
+       location.x = location.x;
+       location.z = location.z;
      }
    }
 }
