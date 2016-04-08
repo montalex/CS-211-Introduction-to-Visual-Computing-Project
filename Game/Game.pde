@@ -16,34 +16,27 @@ void setup(){
 }
 
 void draw(){
-  if(keyPressed == true && keyCode == SHIFT){
-    background(255);
-    stroke(0);
+  background(255);
+  stroke(0);
+  if(isShiftClicked()){
     text("PAUSE:  Cliquez pour ajouter un cylindre.", 10, 10);
-    board.shiftDisplay();
-    for(int i = 0; i < cylinderList.size(); ++i){
-      cylinderList.get(i).shiftDisplay();
-    }
-    ball.shiftDisplay();
   } else {
-    background(255);
-    stroke(0);
     text("Rotation en X: " + board.rotX + ", Rotation en Z: " + board.rotZ + ", Speed: " + board.speed, 10, 10);
-    board.display();
-    for(int i = 0; i < cylinderList.size(); ++i){
-      cylinderList.get(i).display();
-    }
-    ball.update(board);
-    ball.checkEdges();
-    for(int i = 0; i < cylinderList.size(); ++i){
-      ball.checkCylinderCollision(cylinderList.get(i));
-    }
-    ball.display();
   }
+  board.display(isShiftClicked());
+  for(int i = 0; i < cylinderList.size(); ++i){
+    cylinderList.get(i).display();
+  }
+  ball.update(board);
+  ball.checkEdges();
+  for(int i = 0; i < cylinderList.size(); ++i){
+      ball.checkCylinderCollision(cylinderList.get(i));
+  }
+  ball.display(isShiftClicked());
 }
 
 void mouseDragged(){
-  if(!(keyPressed == true && keyCode == SHIFT)){
+  if(!isShiftClicked()){
     int oldPosX = pmouseX;
     int oldPosY = pmouseY;
     if(board.rotX <= MAX_ANGLE && board.rotX >= -MAX_ANGLE){
@@ -64,7 +57,7 @@ void mouseDragged(){
  }
 
 void mouseWheel(MouseEvent event){
-  if(!(keyPressed == true && keyCode == SHIFT)){
+  if(!isShiftClicked()){
     float mod = event.getCount();
     if(mod < 0 && board.speed < MAX_SPEED_PLATE){
       board.speed = min(board.speed + UPDATE_SPEED_PLATE, MAX_SPEED_PLATE);
@@ -75,10 +68,14 @@ void mouseWheel(MouseEvent event){
 }
 
 void mouseClicked(){
-  if(keyPressed == true && keyCode == SHIFT){
+  if(isShiftClicked()){
     Cylinder cylinder = new Cylinder(mouseX, -board.boardThik/2, mouseY);
     if(cylinder.checkBorder() && !cylinder.isOverlap(cylinderList)){
       cylinderList.add(cylinder);
     }
   }
+}
+
+boolean isShiftClicked(){
+  return (keyPressed == true && keyCode == SHIFT);
 }

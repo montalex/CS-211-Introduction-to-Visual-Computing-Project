@@ -21,26 +21,17 @@ class Board{
   /*
   * Display board on the screen.
   */
-  void display(){
+  void display(boolean b){
     noStroke();
     fill(0, 255, 0);
     lights();
     translate(width/2, height/2, 0);
-    rotateX(radians(rotX));
-    rotateZ(radians(rotZ));
-    box(boardSize, boardThik, boardSize);
-  }
-  
-  /*
-  * Special display when SHIFT is pressed
-  * Seen from above.
-  */
-  void shiftDisplay(){
-    noStroke();
-    fill(0, 255, 0);
-    lights();
-    translate(width/2, height/2, 0);
-    rotateX(radians(-90));
+    if(b){
+      rotateX(radians(-90));
+    } else {
+      rotateX(radians(rotX));
+      rotateZ(radians(rotZ));
+    }
     box(boardSize, boardThik, boardSize);
   }
 }

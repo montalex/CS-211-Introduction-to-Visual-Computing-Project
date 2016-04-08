@@ -61,17 +61,6 @@ class Cylinder {
     popMatrix();
   }
   
-  /*
-  * Special display when SHIFT is pressed
-  * Seen from above, used to add cylinders.
-  */
-  void shiftDisplay(){
-    pushMatrix();
-    translate(location.x, location.y, location.z);
-    shape(cylinder);
-    popMatrix();
-  }
-  
   boolean isOverlap(ArrayList<Cylinder> list){
     PVector vDistBall = new PVector(location.x - ball.location.x, location.z - ball.location.z);
     float distBall = vDistBall.mag();

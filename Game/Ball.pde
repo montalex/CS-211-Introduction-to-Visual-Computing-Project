@@ -27,41 +27,34 @@ class Ball {
   * Friction, gravity, velocity and the location vector.
   */
   void update(Board b) {
-    friction = velocity.copy();
-    friction.mult(-1);
-    friction.normalize();
-    friction.mult(frictionMagnitude);
-    gravity.set(sin(radians(b.rotZ))*GRAVITY, 0, -sin(radians(b.rotX))*GRAVITY);
-    velocity.add(gravity);
-    velocity.add(friction);
-    location.add(velocity);
+    if(!isShiftClicked()){
+      friction = velocity.copy();
+      friction.mult(-1);
+      friction.normalize();
+      friction.mult(frictionMagnitude);
+      gravity.set(sin(radians(b.rotZ))*GRAVITY, 0, -sin(radians(b.rotX))*GRAVITY);
+      velocity.add(gravity);
+      velocity.add(friction);
+      location.add(velocity);
+    }
   }
   
   /*
   * Display ball on screen
   */
-  void display() {
+  void display(boolean b) {
     pushMatrix();
     noStroke();
     fill(210, 0, 0);
     lights();
-    translate(location.x, location.y, location.z);
-    sphere(ballRadius);
-    popMatrix();
-   }
-   
-  /*
-  * Special display when SHIFT is pressed
-  * Seen from above.
-  */
-   void shiftDisplay(){
-     pushMatrix();
-     noStroke();
-     fill(210, 0, 0);
-     lights();
+    if(b){
      translate(location.x, -(ballRadius + board.boardThik/2), location.z);
      sphere(ballRadius);
-     popMatrix();
+    } else {
+     translate(location.x, location.y, location.z);
+     sphere(ballRadius);
+    }
+    popMatrix();
    }
    
    /*
