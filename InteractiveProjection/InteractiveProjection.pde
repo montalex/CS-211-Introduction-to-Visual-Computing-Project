@@ -1,8 +1,25 @@
 /*
-* Projections.pde
+* InteractiveProjection.pde
 * Author : Alexis Montavon, Boris Flückiger and Dorian Laforest
 * Group BE
 */
+
+final static float MIN_SCALING_VALUE = 0.5;
+final static float MAX_SCALING_VALUE = 5; 
+float scaleValue = 1;
+float scalingFactor = 0.1;
+
+float xRotationValue = 0;
+float xRotationFactor = 0.01;
+
+float yRotationValue = 0;
+float yRotationFactor = 0.01;
+
+boolean rotateXUp = false;
+boolean rotateXDown = false;
+
+boolean rotateYUp = false;
+boolean rotateYDown = false;
 
 /*
 * Method settings
@@ -21,32 +38,108 @@ void setup() {
 
 /*
 * Method draw
-* Draw a white background and three times a cuboid
-* with various transformation :
-* The first one with a rotation among X axis
-* The second one with an additional translation
-* The last one with an addiional scaling
+* Draw a white background and a cuboid center at (0, 0, 0)
+* The cuboid is transformed according to the value of the different variable
+* xRotationValue, yRotationValue, scaleValue and a translation is done such that
+* the origin (0, 0, 0) is at the center of the window
 */
 void draw() {
   background(255, 255, 255);
   My3DPoint eye = new My3DPoint(0, 0, -5000);
-  My3DPoint origin = new My3DPoint(0, 0, 0);
-  My3DBox input3DBox = new My3DBox(origin, 100, 150, 300);
+  float dimX = 150;
+  float dimY = 150;
+  float dimZ = 150;
+  My3DPoint origin = new My3DPoint(-dimX/2, -dimY/2, -dimZ/2); //The back bottom left vertex
+  My3DBox input3DBox = new My3DBox(origin, dimX, dimY, dimZ);
   
-  //rotated around x
-  float[][] transform1 = rotateXMatrix(PI/8);
-  input3DBox = transformBox(input3DBox, transform1);
-  projectBox(eye, input3DBox).render();
+  if(rotateXUp) {
+    xRotationValue += xRotationFactor;
+  }
+  else if (rotateXDown) {
+    xRotationValue -= xRotationFactor;
+  }
   
-  //rotated and translated
-  float[][] transform2 = translationMatrix(200, 200, 0);
-  input3DBox = transformBox(input3DBox, transform2);
-  projectBox(eye, input3DBox).render();
+  if(rotateYUp) {
+    yRotationValue += yRotationFactor;
+  }
+  else if(rotateYDown) {
+    yRotationValue -= yRotationFactor;
+  }
   
-  //rotated, translated, and scaled
-  float[][] transform3 = scaleMatrix(2, 2, 2);
-  input3DBox = transformBox(input3DBox, transform3);
+  float[][] xRotation = rotateXMatrix(xRotationValue);
+  float[][] yRotation = rotateYMatrix(yRotationValue);
+  float[][] scale = scaleMatrix(scaleValue, scaleValue, scaleValue);
+  float[][] translation = translationMatrix(width/2, height/2, 0);
+  
+  input3DBox = transformBox(input3DBox, xRotation);
+  input3DBox = transformBox(input3DBox, yRotation);
+  input3DBox = transformBox(input3DBox, scale);
+  input3DBox = transformBox(input3DBox, translation);
+  
   projectBox(eye, input3DBox).render();
+}
+
+/*
+* Method mouseDragged
+* Change de scaling value if the mouse is dragged among y axis
+*/
+void mouseDragged() {
+  if(mouseY < pmouseY) {
+    scaleValue += scalingFactor;
+    if(scaleValue > MAX_SCALING_VALUE)
+      scaleValue = MAX_SCALING_VALUE;
+  }
+  else if(mouseY > pmouseY) {
+    scaleValue -= scalingFactor;
+    if(scaleValue < MIN_SCALING_VALUE)
+      scaleValue = MIN_SCALING_VALUE;
+  }
+}
+
+/*
+* Method keyPressed
+* Change the rotation axis and orientation boolean to true when a specific key is pressed
+*/
+void keyPressed() {
+  if(key == CODED) {
+    if(keyCode == UP) {
+      rotateXUp = true;
+    }
+    else if(keyCode == DOWN) {
+      rotateXDown = true;
+    }
+    else if(keyCode == RIGHT) {
+      rotateYUp = true;
+    }
+    else if(keyCode == LEFT) {
+      rotateYDown = true;
+    }
+  }
+}
+
+/*
+* Method keyReleased
+* Change the rotation axis and orientation boolean to false when a specific key is pressed
+*/
+void keyReleased() {
+  if(key == CODED) {
+    if(keyCode == UP) {
+      //xRotationValue += xRotationFactor;
+      rotateXUp = false;
+    }
+    else if(keyCode == DOWN) {
+      //xRotationValue -= xRotationFactor;
+      rotateXDown = false;
+    }
+    else if(keyCode == RIGHT) {
+      //yRotationValue += yRotationFactor;
+      rotateYUp = false;
+    }
+    else if(keyCode == LEFT) {
+      //yRotationValue -= yRotationFactor;
+      rotateYDown = false;
+    }
+  }
 }
 
 /*
