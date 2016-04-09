@@ -1,16 +1,22 @@
 /*
-* Represent the playing board.
+* Board.pde
+* The board class
+* Author : Alexis Montavon, Boris Flückiger and Dorian Laforest
+* Group BE
+*
+* Represents the playing board.
 */
 class Board{
   private float rotX; // Rotational angle (in degrees) in X coordinate.
   private float rotZ; // Rotational angle (in degrees) in Z coordinate.
   private float speed; // Rotational speed of board.
-  private final float boardSize = 600; // Size of sqared board.
-  private final float boardThik = 20; // Thikness of board.
+  private final float boardSize = 600; // Size of squared board.
+  private final float boardThick = 20; // Thickness of board.
   
   /*
-  * Create new Board object, initialize his
-  * rotation angles for axes X and Z and rotation speed.
+  * Board's constructor
+  * Creates a new Board object, initialize its
+  * rotation angles for X and Z axes and rotation speed.
   */
   Board(){
     rotX = 0.0;
@@ -19,19 +25,21 @@ class Board{
   }
   
   /*
-  * Display board on the screen.
+  * Method display
+  * Displays the board on the screen.
+  * Rotates the board regarding the game mode
   */
-  void display(boolean b){
+  void display(boolean isShiftClicked){
     noStroke();
-    fill(0, 255, 0);
+    fill(118);
     lights();
     translate(width/2, height/2, 0);
-    if(b){
-      rotateX(radians(-90));
+    if(isShiftClicked){
+      rotateX(-PI/2.0);
     } else {
       rotateX(radians(rotX));
       rotateZ(radians(rotZ));
     }
-    box(boardSize, boardThik, boardSize);
+    box(boardSize, boardThick, boardSize);
   }
 }

@@ -1,5 +1,10 @@
 /*
-* Represent a cylinder obstacle.
+* Cylinder.pde
+* The cylinder class
+* Author : Alexis Montavon, Boris Flückiger and Dorian Laforest
+* Group BE
+*
+* Represents a cylinder obstacle.
 */
 class Cylinder {
   private PVector location; // Coordinate vector of ball.
@@ -15,7 +20,8 @@ class Cylinder {
   private float[] z = new float[cylinderResolution + 1]; // Use to create the cylinder.
   
   /*
-  * Creates a new cylinder object, initialize his location
+  * Cylinder's constructor
+  * Creates a new cylinder object, initialize its location
   * and forms the object.
   */
   Cylinder(float posX, float posY, float posZ){
@@ -52,7 +58,8 @@ class Cylinder {
   }
   
   /*
-  * Display cylinder on the board.
+  * Method display
+  * Displays cylinder on the board.
   */
   void display(){
     pushMatrix();
@@ -61,22 +68,40 @@ class Cylinder {
     popMatrix();
   }
   
-  boolean isOverlap(ArrayList<Cylinder> list){
+  /*
+  * Method isOverlap
+  * Checks if a cylinder from cylinderList is not overlapping
+  * with another cylinder or with the ball
+  */
+  boolean isOverlap(ArrayList<Cylinder> cylinderList){
     PVector vDistBall = new PVector(location.x - ball.location.x, location.z - ball.location.z);
     float distBall = vDistBall.mag();
     if(distBall <= cylinderRadius + ball.ballRadius){
       return true;
     }
-    for(int i = 0; i < list.size(); ++i){
-       PVector vDist = new PVector(location.x - list.get(i).location.x, location.z - list.get(i).location.z);
+    for(Cylinder c : cylinderList) {
+      PVector vDist = new PVector(location.x - c.location.x, location.z - c.location.z);
        float dist = vDist.mag();
        if((dist <= 2 * cylinderRadius)){
          return true;
        }
     }
+    /*
+    for(int i = 0; i < cylinderList.size(); ++i){
+       PVector vDist = new PVector(location.x - cylinderList.get(i).location.x, location.z - cylinderList.get(i).location.z);
+       float dist = vDist.mag();
+       if((dist <= 2 * cylinderRadius)){
+         return true;
+       }
+    }
+    */
     return false;
   }
   
+  /*
+  * Method checkBorder
+  * Checks if the cylinder is not out of the board
+  */
   boolean checkBorder(){
     return ((abs(location.x) <= board.boardSize/2) && (abs(location.z) <= board.boardSize/2));
   }

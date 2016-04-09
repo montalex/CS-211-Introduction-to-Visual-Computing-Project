@@ -1,5 +1,10 @@
 /*
-* Represent the ball on the playing board.
+* Ball.pde
+* The ball class
+* Author : Alexis Montavon, Boris Flückiger and Dorian Laforest
+* Group BE
+*
+* Represents the ball on the playing board.
 */
 class Ball {
   private PVector location; // Coordinate vector of ball.
@@ -12,27 +17,30 @@ class Ball {
   private final float frictionMagnitude = 0.01; // Friction force magnitude = normal Force * mu (1 * 0.01).
   
   /* 
-  * Create a new Ball object, initialize his
+  * Ball's constructor
+  * Creates a new Ball object, initialize its
   * location (on the center of board), velocity and gravity.
   */
   Ball(){
     ballRadius = 20; 
-    location = new PVector(0, - (ballRadius + board.boardThik/2), 0);
+    location = new PVector(0, - (ballRadius + board.boardThick/2), 0);
     velocity = new PVector(0, 0, 0);
     gravity = new PVector(0, 0, 0);
   }
   
   /*
-  * Update all forces that influence ball movements
-  * Friction, gravity, velocity and the location vector.
+  * Method update
+  * Updates all forces that influence ball movements
+  * Friction, gravity, velocity and the location vector
+  * if and only if the game is not in "Add cylinder mode"
   */
-  void update(Board b) {
+  void update(Board board) {
     if(!isShiftClicked()){
       friction = velocity.copy();
       friction.mult(-1);
       friction.normalize();
       friction.mult(frictionMagnitude);
-      gravity.set(sin(radians(b.rotZ))*GRAVITY, 0, -sin(radians(b.rotX))*GRAVITY);
+      gravity.set(sin(radians(board.rotZ))*GRAVITY, 0, -sin(radians(board.rotX))*GRAVITY);
       velocity.add(gravity);
       velocity.add(friction);
       location.add(velocity);
@@ -40,25 +48,29 @@ class Ball {
   }
   
   /*
-  * Display ball on screen
+  * Method display
+  * Displays the ball on the screen
+  * at its correct position regarding in
+  * which mode the game is
   */
-  void display(boolean b) {
+  void display(boolean isShiftClicked) {
     pushMatrix();
     noStroke();
-    fill(210, 0, 0);
-    lights();
-    if(b){
-     translate(location.x, -(ballRadius + board.boardThik/2), location.z);
-     sphere(ballRadius);
+    fill(118);
+    //lights();
+    if(isShiftClicked){
+      translate(location.x, -(ballRadius + board.boardThick/2), location.z);
+      sphere(ballRadius);
     } else {
-     translate(location.x, location.y, location.z);
-     sphere(ballRadius);
+      translate(location.x, location.y, location.z);
+      sphere(ballRadius);
     }
     popMatrix();
-   }
+  }
    
    /*
-   * Makes sure that ball stay on the plate's surface.
+   * Method checkEdges
+   * Makes sure that the ball stays on the plate's surface.
    */
    void checkEdges() {
      if(location.x > board.boardSize/2) {
@@ -78,7 +90,10 @@ class Ball {
    }
    
    /*
-   * Makes sure the ball bounces off the cylinders.
+   * Method checkCylinderCollision
+   * Makes sure the ball bounces off the cylinders
+   * and replaces it to its correct place if overlapping
+   * with a cylinder
    */
    void checkCylinderCollision(Cylinder cylinder){
      PVector Vdist = new PVector(location.x - cylinder.location.x, location.z - cylinder.location.z);
