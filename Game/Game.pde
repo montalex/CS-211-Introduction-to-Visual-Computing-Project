@@ -44,32 +44,15 @@ void setup(){
 void draw(){
   background(255);
   stroke(0);
-  /*
-  if(isShiftClicked()){
-    text("PAUSE:  Cliquez pour ajouter un cylindre.", 10, 10);
-  } else {
-    text("Rotation en X: " + board.rotX + ", Rotation en Z: " + board.rotZ + ", Speed: " + board.speed, 10, 10);
-  }
-  */
   board.display(isShiftClicked());
   for(Cylinder c : cylinderList) {
     c.display();
   }
-  /*
-  for(int i = 0; i < cylinderList.size(); ++i){
-    cylinderList.get(i).display();
-  }
-  */
   ball.update(board);
   ball.checkEdges();
   for(Cylinder c : cylinderList) {
     ball.checkCylinderCollision(c);
   }
-  /*
-  for(int i = 0; i < cylinderList.size(); ++i){
-      ball.checkCylinderCollision(cylinderList.get(i));
-  }
-  */
   ball.display(isShiftClicked());
 }
 
@@ -79,7 +62,7 @@ void draw(){
 * Changes the X and Z axes rotation value between -MAX_ANGLE and +MAX_ANGLE degrees
 * X axis when the mouse moves vertically
 * Y axis when the mouse moves horizontally
-* 
+*
 */
 void mouseDragged(){
   if(!isShiftClicked()){

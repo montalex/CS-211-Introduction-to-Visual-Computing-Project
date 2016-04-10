@@ -12,7 +12,7 @@ class Board{
   private float speed; // Rotational speed of board.
   private final float boardSize = 600; // Size of squared board.
   private final float boardThick = 20; // Thickness of board.
-  
+
   /*
   * Board's constructor
   * Creates a new Board object, initialize its
@@ -23,7 +23,7 @@ class Board{
     rotZ = 0.0;
     speed = 1.0;
   }
-  
+
   /*
   * Method display
   * Displays the board on the screen.

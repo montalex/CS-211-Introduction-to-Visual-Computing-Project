@@ -86,15 +86,6 @@ class Cylinder {
          return true;
        }
     }
-    /*
-    for(int i = 0; i < cylinderList.size(); ++i){
-       PVector vDist = new PVector(location.x - cylinderList.get(i).location.x, location.z - cylinderList.get(i).location.z);
-       float dist = vDist.mag();
-       if((dist <= 2 * cylinderRadius)){
-         return true;
-       }
-    }
-    */
     return false;
   }
   

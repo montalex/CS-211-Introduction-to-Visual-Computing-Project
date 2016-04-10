@@ -57,7 +57,6 @@ class Ball {
     pushMatrix();
     noStroke();
     fill(118);
-    //lights();
     if(isShiftClicked){
       translate(location.x, -(ballRadius + board.boardThick/2), location.z);
       sphere(ballRadius);
