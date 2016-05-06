@@ -1,3 +1,4 @@
+import java.util.ArrayDeque;
 /*
 * Game.pde
 * The game main class
@@ -12,12 +13,21 @@ private final float MAX_ANGLE = 60.0; // Max angle in degrees.
 private final float MAX_SPEED_PLATE = 1.5; // Max rotational speed factor of plate.
 private final float MIN_SPEED_PLATE = 0.1; // Min rotational speed factor of plate.
 private final float UPDATE_SPEED_PLATE = 0.1; // Modifier value for plate rotational speed.
+private int score;
+private int lastScore;
+private ArrayDeque<Integer> scoreList;
+private PGraphics bottomSurface;
+private PGraphics topView;
+private PGraphics scoreBoard;
+private PGraphics barChart;
+private HScrollbar scrollBar;
 
 /*
 * Method settings
 * Sets up the window size to take the full display size and the rendering mode to P3D
 */
 void settings(){
+  fullScreen();
   size(displayWidth, displayHeight, P3D);
 }
 
@@ -27,9 +37,17 @@ void settings(){
 * initialise the cylinder list to an empty one
 */
 void setup(){
+  score = 0;
+  lastScore = 0;
+  scoreList = new ArrayDeque();
   board = new Board();
   ball = new Ball();
   cylinderList = new ArrayList<Cylinder>();
+  bottomSurface = createGraphics(width, 150, P2D);
+  topView = createGraphics(130, 130, P2D);
+  scoreBoard = createGraphics(110, 130, P2D);
+  barChart = createGraphics(1000, 100, P2D);
+  scrollBar = new HScrollbar(topView.width + scoreBoard.width + 100, height - 40, 300, 20);
 }
 
 /*
@@ -43,7 +61,16 @@ void setup(){
 */
 void draw(){
   background(255);
-  stroke(0);
+  drawBottomSurface();
+  image(bottomSurface, 0, height - bottomSurface.height);
+  drawTopView();
+  image(topView, 10, height - (topView.height + 10));
+  drawScoreBoard();
+  image(scoreBoard, 20 + topView.width, height - (scoreBoard.height + 10));
+  drawBarChart();
+  image(barChart, 100 + topView.width + scoreBoard.width, height - (barChart.height + 40));
+  scrollBar.update();
+  scrollBar.display();
   board.display(isShiftClicked());
   for(Cylinder c : cylinderList) {
     c.display();
@@ -65,7 +92,7 @@ void draw(){
 *
 */
 void mouseDragged(){
-  if(!isShiftClicked()){
+  if(!isShiftClicked() && !scrollBar.locked){
     if(board.rotX <= MAX_ANGLE && board.rotX >= -MAX_ANGLE){
       if(mouseY < pmouseY){
         board.rotX = min(board.rotX + (SPEED_ROT_MULT*board.speed), MAX_ANGLE);
@@ -115,11 +142,94 @@ void mouseClicked(){
   }
 }
 
-
 /*
 * Function isShiftClicked
 * Returns true if the shift key is clicked
 */
 boolean isShiftClicked(){
   return (keyPressed == true && keyCode == SHIFT);
+}
+
+void winPoints() {
+  if(ball.velocity.mag() >= 1) {
+    score += round(ball.velocity.mag());
+    lastScore = round(ball.velocity.mag());
+    if(scoreList.size() == 100){
+      scoreList.remove();
+    }
+    scoreList.add(score);
+  }
+}
+
+void losePoints() {
+  if(ball.velocity.mag() >= 1) {
+    score -= round(ball.velocity.mag());
+    lastScore = -round(ball.velocity.mag());
+    if(scoreList.size() == 100){
+      scoreList.remove();
+    }
+    scoreList.add(score);
+  }
+}
+
+void drawBottomSurface() {
+  bottomSurface.beginDraw();
+  bottomSurface.background(70, 250, 170);
+  bottomSurface.endDraw();
+}
+
+void drawTopView() {
+  topView.beginDraw();
+  topView.background(128);
+  float xPos = topView.width/2 + (ball.location.x * (topView.width*1.0 / board.boardSize));
+  float yPos = topView.height/2 + (ball.location.z * (topView.height*1.0 / board.boardSize));
+  topView.fill(100);
+  topView.ellipse(xPos, yPos, ball.ballRadius/2, ball.ballRadius/2);
+  for(Cylinder c : cylinderList) {
+    float c_xPos = topView.width/2 + (c.location.x * (topView.width*1.0 / board.boardSize));
+    float c_yPos = topView.height/2 + (c.location.z * (topView.height*1.0 / board.boardSize));
+    topView.ellipse(c_xPos, c_yPos, c.cylinderRadius/2, c.cylinderRadius/2);
+  }
+  topView.endDraw();
+}
+
+void drawScoreBoard() {
+  int text_x = 10;
+  int text_y = 20;
+  scoreBoard.beginDraw();
+  scoreBoard.background(70, 250, 170);
+  scoreBoard.stroke(255);
+  scoreBoard.strokeWeight(2);
+  scoreBoard.line(1, 1, scoreBoard.width, 1);
+  scoreBoard.line(scoreBoard.width-1, 0, scoreBoard.width-1, scoreBoard.height-1);
+  scoreBoard.line(1, 1, 1, scoreBoard.height-1);
+  scoreBoard.line(1, scoreBoard.height-1, scoreBoard.width-1, scoreBoard.height-1);
+  scoreBoard.fill(0);
+  scoreBoard.textSize(15);
+  scoreBoard.text("Total Score:", text_x, text_y);
+  text_y += 15;
+  scoreBoard.text(score, text_x, text_y);
+  text_y += 25;
+  scoreBoard.text("Velocity:", text_x, text_y);
+  text_y += 15;
+  scoreBoard.text(ball.velocity.mag(), text_x, text_y);
+  text_y += 25;
+  scoreBoard.text("Last Score:", text_x, text_y);
+  text_y += 15;
+  scoreBoard.text(lastScore, text_x, text_y);
+  scoreBoard.endDraw();
+}
+
+void drawBarChart() {
+  barChart.beginDraw();
+  barChart.background(250, 250, 200);
+  float midPoint = barChart.Y + barChart.height/2;
+  float posCount = 0;
+  barChart.fill(200, 80, 20);
+  for(Integer i: scoreList) {
+    float rectWidth = 10 * (scrollBar.sliderPosition / (scrollBar.sliderPositionMax));
+    barChart.rect(barChart.X + posCount, midPoint - i/2, rectWidth, i/2);
+    posCount += rectWidth;//rect width
+  }
+  barChart.endDraw();
 }

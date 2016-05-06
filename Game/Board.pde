@@ -10,7 +10,7 @@ class Board{
   private float rotX; // Rotational angle (in degrees) in X coordinate.
   private float rotZ; // Rotational angle (in degrees) in Z coordinate.
   private float speed; // Rotational speed of board.
-  private final float boardSize = 600; // Size of squared board.
+  private final float boardSize = 500; // Size of squared board.
   private final float boardThick = 20; // Thickness of board.
 
   /*

@@ -7,7 +7,7 @@
 * Represents a cylinder obstacle.
 */
 class Cylinder {
-  private PVector location; // Coordinate vector of ball.
+  private PVector location; // Coordinate vector of cylinder.
   private float cylinderRadius = 40; // Cylinder radius.
   private float cylinderHeight = 50; // Cylinder height.
   private int cylinderResolution = 40; // Cylinder resolution.
