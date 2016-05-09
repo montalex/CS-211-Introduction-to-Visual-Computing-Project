@@ -150,6 +150,11 @@ boolean isShiftClicked(){
   return (keyPressed == true && keyCode == SHIFT);
 }
 
+/*
+* Function winPoints
+* Increase the current score and keeps track
+* of the score list
+*/
 void winPoints() {
   if(ball.velocity.mag() >= 1) {
     score += round(ball.velocity.mag());
@@ -161,6 +166,11 @@ void winPoints() {
   }
 }
 
+/*
+* Function winPoints
+* Decrease the current score and keeps track
+* of the score list
+*/
 void losePoints() {
   if(ball.velocity.mag() >= 1) {
     score -= round(ball.velocity.mag());
@@ -172,12 +182,20 @@ void losePoints() {
   }
 }
 
+/*
+* Function drawBottomSurface
+* Draw the Bottom rectangle surface
+*/
 void drawBottomSurface() {
   bottomSurface.beginDraw();
   bottomSurface.background(70, 250, 170);
   bottomSurface.endDraw();
 }
 
+/*
+* Function drawTopView
+* Display the Gaming board's top view
+*/
 void drawTopView() {
   topView.beginDraw();
   topView.background(128);
@@ -193,6 +211,10 @@ void drawTopView() {
   topView.endDraw();
 }
 
+/*
+* Function drawScoreBoard
+* Display the score, ball's velocity and last points scored
+*/
 void drawScoreBoard() {
   int text_x = 10;
   int text_y = 20;
@@ -220,6 +242,10 @@ void drawScoreBoard() {
   scoreBoard.endDraw();
 }
 
+/*
+* Function drawTopView
+* Draw the Gaming board's top view
+*/
 void drawBarChart() {
   barChart.beginDraw();
   barChart.background(250, 250, 200);
