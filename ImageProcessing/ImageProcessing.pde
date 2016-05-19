@@ -1,4 +1,5 @@
 import java.util.Collections;
+import java.util.Random;
 PImage img;
 PImage sobelIm;
 PImage gaussIm;
@@ -7,29 +8,35 @@ PImage satIm;
 float[][] gaussianKer = {{ 9, 12, 9 },{ 12, 15, 12 },{ 9, 12, 9 }};
 ArrayList<Integer> bestCandidates;
 ArrayList<PVector> vectIntersect;
+QuadGraph quadGraph;
 
 void settings(){
-  size(1200, 300);
+  size(500, 500);
 }
 
 void setup(){
-  img = loadImage("board1.jpg");
+  img = loadImage("board2.jpg");
+  img.resize(width, height);
   bestCandidates = new ArrayList<Integer>();
   vectIntersect =  new ArrayList<PVector>();
+  quadGraph = new QuadGraph();
   noLoop();
 }
 
-void draw(){
+void draw() {
   background(color(0,0,0));
   hueIm = hueTreshold(treshSat(img, 0, 80), 80, 139);
   gaussIm = convolute(hueIm, gaussianKer, 163);
   sobelIm = sobel(treshBright(gaussIm, 118, 180));
+  //image(sobel(img), 0, 0);
   //image(satIm, 0, 0);
   //image(treshBright(img, 30, 110), 0, 0);
   //image(gaussIm, 0, 0);
-  image(sobelIm, 800, 0, 400, 300);
-  image(houghAcc(sobelIm), 400, 0, 400, 300);
-  image(img, 0, 0, 400, 300);
+  /*image(img, 0, 0);
+  houghLines(sobelIm, 4);
+  image(houghAcc(sobelIm), width/3, 0);
+  image(sobelIm, 2*width/3, 0);*/
+  image(img, 0, 0);
   houghLines(sobelIm, 4);
 }
 
@@ -177,7 +184,7 @@ PImage houghAcc(PImage edgeImg){
     houghImg.pixels[i] = color(min(255, accumulator[i]));
   }
   // Resize the accumulator to make it easier to see:
-  houghImg.resize(400, 400);
+  houghImg.resize(width/3, 400);
   houghImg.updatePixels();
   return houghImg; 
 }
@@ -187,8 +194,7 @@ ArrayList<PVector> houghLines(PImage edgeImg, int nLines){
   float discretizationStepsR = 2.5f;
   // dimensions of the accumulator
   int phiDim = (int) (Math.PI / discretizationStepsPhi);
-  int rDim = (int) (((edgeImg.width + edgeImg.height) * 2 + 1) / discretizationStepsR); // same as..
-  PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
+  int rDim = (int) (((edgeImg.width + edgeImg.height) * 2 + 1) / discretizationStepsR);
   int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
   float r = 0;
   edgeImg.loadPixels();
@@ -292,6 +298,7 @@ ArrayList<PVector> houghLines(PImage edgeImg, int nLines){
         }
      }
   }
+  drawQuad(vectIntersect);
   return getIntersections(vectIntersect);
 }
 
@@ -310,4 +317,40 @@ ArrayList<PVector> getIntersections(ArrayList<PVector> lines) {
     }
   }
   return intersections;
+}
+
+void drawQuad (ArrayList<PVector> lines){ 
+ quadGraph.build(lines,img.width, img.height);
+ ArrayList<int[]> quads = new ArrayList<int[]>();
+ quads = (ArrayList)quadGraph.findCycles(); //indCycles() use the method findNewCycles()
+ for (int[] quad : quads) {
+    PVector l1 = lines.get(quad[0]);
+    PVector l2 = lines.get(quad[1]);
+    PVector l3 = lines.get(quad[2]);
+    PVector l4 = lines.get(quad[3]);
+    // (intersection() is a simplified version of the
+    // intersections() method you wrote last week, that simply
+    // return the coordinates of the intersection between 2 lines)
+    PVector c12 = intersection(l1, l2);
+    PVector c23 = intersection(l2, l3);
+    PVector c34 = intersection(l3, l4);
+    PVector c41 = intersection(l4, l1);
+    // Choose a random, semi-transparent colour
+    Random random = new Random();
+    if (quadGraph.isConvex(c12,c23,c34,c41) && quadGraph.validArea(c12,c23,c34,c41,img.width*img.height*100,20) && quadGraph.nonFlatQuad(c12,c23,c34,c41)){
+      fill(color(min(255, random.nextInt(300)),
+      min(255, random.nextInt(300)),
+      min(255, random.nextInt(300)), 50));
+      quad(c12.x,c12.y,c23.x,c23.y,c34.x,c34.y,c41.x,c41.y);
+    }
+ }
+}
+
+
+
+PVector intersection(PVector line1, PVector line2) {
+  float d = cos(line2.y) * sin(line1.y) - cos(line1.y) * sin(line2.y);
+  int x = (int)((line2.x * sin(line1.y) - line1.x * sin(line2.y)) / d);
+  int y = (int)((-line2.x * cos(line1.y) + line1.x * cos(line2.y)) / d);
+  return new PVector(x,y);
 }
