@@ -9,5 +9,5 @@ class HoughComparator implements java.util.Comparator<Integer> {
       return -1;
     }
     return 1;
-  } 
+  }
 }

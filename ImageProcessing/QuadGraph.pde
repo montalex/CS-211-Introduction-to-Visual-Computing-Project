@@ -12,7 +12,6 @@ class QuadGraph {
   void build(List<PVector> lines, int width, int height) {
 
     int n = lines.size();
-
     // The maximum possible number of edges is n * (n - 1)/2
     graph = new int[n * (n - 1)/2][2];
 
@@ -21,12 +20,10 @@ class QuadGraph {
     for (int i = 0; i < lines.size(); i++) {
       for (int j = i + 1; j < lines.size(); j++) {
         if (intersect(lines.get(i), lines.get(j), width, height)) {
-
           // fill the graph using intersect() to check if two lines are
           // connected in the graph.
           graph[idx][0] = i;
           graph[idx][1] = j;
-
           idx++;
         }
       }
@@ -234,28 +231,30 @@ class QuadGraph {
       || (i1<0 && i2<0 && i3<0 && i4<0))
       return true;
     else 
-    System.out.println("Eliminating non-convex quad");
+      System.out.println("Eliminating non-convex quad");
     return false;
   }
 
   /** Compute the area of a quad, and check it lays within a specific range
    */
   boolean validArea(PVector c1, PVector c2, PVector c3, PVector c4, float max_area, float min_area) {
-
     PVector v21= PVector.sub(c1, c2);
     PVector v32= PVector.sub(c2, c3);
     PVector v43= PVector.sub(c3, c4);
     PVector v14= PVector.sub(c4, c1);
-
+    /*
+    //test
+    PVector AC = PVector.sub(c1,c3);
+    PVector DB = PVector.sub(c2,c4);
+    float area = 0.5f*Math.abs((AC.x*DB.y - AC.y*DB.x));
+    ///end test
+    */
     float i1=v21.cross(v32).z;
     float i2=v32.cross(v43).z;
     float i3=v43.cross(v14).z;
     float i4=v14.cross(v21).z;
 
     float area = Math.abs(0.5f * (i1 + i2 + i3 + i4));
-
-    //System.out.println(area);
-
     boolean valid = (area < max_area && area > min_area);
 
     if (!valid) System.out.println("Area out of range");
@@ -290,7 +289,7 @@ class QuadGraph {
   }
 
 
-  List<PVector> sortCorners(List<PVector> quad) {
+ List<PVector> sortCorners(List<PVector> quad) {
 
     // 1 - Sort corners so that they are ordered clockwise
     PVector a = quad.get(0);
