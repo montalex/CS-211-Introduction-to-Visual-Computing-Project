@@ -360,7 +360,7 @@ ArrayList<int[]> getQuad(ArrayList<PVector> lines, int imgWidth, int imgHeight) 
     PVector c23 = intersection(l2, l3);
     PVector c34 = intersection(l3, l4);
     PVector c41 = intersection(l4, l1);
-    if(graph.isConvex(c12, c23, c34, c41) && graph.validArea(c12, c23, c34, c41, imgWidth*imgHeight*2, (imgWidth*imgHeight)/100) && graph.nonFlatQuad(c12, c23, c34, c41)) {
+    if(graph.isConvex(c12, c23, c34, c41) && graph.validArea(c12, c23, c34, c41, imgWidth*imgHeight, (imgWidth*imgHeight)/100) && graph.nonFlatQuad(c12, c23, c34, c41)) {
       validQuads.add(quad);
     }
   }
