@@ -17,7 +17,7 @@ void setup(){
 void draw() {
   img.resize(400, 300);
   image(img, 0, 0);
-  PImage threshIm = HBSthresholding(img, 81.4, 138.6, 18.3, 191.25, 55.5, 255.0);
+  PImage threshIm = HBSthresholding(img, 83.210526, 142.9342, 15.434211, 189.9079, 59.05263, 255.0);
   PImage blurrIm = gaussianBlur(gaussianBlur(threshIm));
   PImage cleanIm = brightnessThresholding(blurrIm, 253, 255);
   PImage sobelIm = sobel(cleanIm);
