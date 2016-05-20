@@ -238,23 +238,15 @@ class QuadGraph {
   /** Compute the area of a quad, and check it lays within a specific range
    */
   boolean validArea(PVector c1, PVector c2, PVector c3, PVector c4, float max_area, float min_area) {
-    /*
-    PVector v21= PVector.sub(c1, c2);
-    PVector v32= PVector.sub(c2, c3);
-    PVector v43= PVector.sub(c3, c4);
-    PVector v14= PVector.sub(c4, c1);
     
-    float i1=v21.cross(v32).z;
-    float i2=v32.cross(v43).z;
-    float i3=v43.cross(v14).z;
-    float i4=v14.cross(v21).z;
+    float i1=c1.cross(c2).z;
+    float i2=c2.cross(c3).z;
+    float i3=c3.cross(c4).z;
+    float i4=c4.cross(c1).z;
 
     float area = Math.abs(0.5f * (i1 + i2 + i3 + i4));
-    */
 
-    PVector AC = PVector.sub(c1,c3);
-    PVector DB = PVector.sub(c2,c4);
-    float area = 0.5f*Math.abs((AC.x*DB.y - AC.y*DB.x));
+    //System.out.println(area);
     
     boolean valid = (area < max_area && area > min_area);
 
