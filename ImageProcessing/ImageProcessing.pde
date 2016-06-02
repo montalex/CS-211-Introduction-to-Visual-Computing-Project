@@ -1,21 +1,41 @@
+import processing.video.*;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Arrays;
+
 PImage img;
+Capture cam;
+TwoDThreeD t2d;
 float discretizationStepsPhi = 0.005f;
 float discretizationStepsR = 2.5f;
 
 void settings(){
-  size(1200, 300);
+  size(800, 600);
 }
 
 void setup(){
+  /*frameRate(4f);
+  String[] cameras = Capture.list();
+  if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    exit();
+  } else {
+    println("Available cameras:");
+  for (int i = 0; i < cameras.length; i++) {
+    println(cameras[i]);
+  }
+  cam = new Capture(this, cameras[0]);
+  cam.start();
+  }*/
   img = loadImage("board1.jpg");
   noLoop();
 }
 
 void draw() {
-  img.resize(400, 300);
+  /*if (cam.available() == true) {
+    cam.read();
+  }
+  img = cam.get();*/
   image(img, 0, 0);
   PImage threshIm = HBSthresholding(img, 83.210526, 142.9342, 15.434211, 189.9079, 59.05263, 255.0);
   PImage blurrIm = gaussianBlur(gaussianBlur(threshIm));
@@ -38,18 +58,14 @@ void draw() {
     }
     drawBorderLines(linesToDraw, sobelIm.width);
     ArrayList<PVector> intersections = getIntersections(linesToDraw);
+    t2d = new TwoDThreeD(Math.round(intersections.get(1).x - intersections.get(0).x), Math.round(intersections.get(1).y - intersections.get(2).y));
+    PVector rot = t2d.get3DRotations(sortCorners(intersections));
+    println("rx = " + Math.toDegrees(rot.x));
+    println("ry = " + Math.toDegrees(rot.y));
+    println("rz = " + Math.toDegrees(rot.z));
     drawIntersections(intersections);
     drawQuads(Collections.singletonList(quads.get(0)), linesIntersection);
   }
-  
-  PImage houghIm = displayHoughAcc(accumulator, phiDim, rDim);
-  
-
-    
-  sobelIm.resize(400, 300);
-  houghIm.resize(400, 300);
-  image(houghIm, 400, 0); 
-  image(sobelIm, 800, 0);
 }
 
 PImage convolute(PImage img, float[][] kernel, float weight) {
@@ -384,4 +400,24 @@ void drawQuads(List<int[]> quads, ArrayList<PVector> lines) {
       min(255, random.nextInt(300)), 50));
       quad(c12.x,c12.y,c23.x,c23.y,c34.x,c34.y,c41.x,c41.y);
   }
+}
+
+ List<PVector> sortCorners(List<PVector> quad) {
+  // 1 - Sort corners so that they are ordered clockwise
+  PVector a = quad.get(0);
+  PVector b = quad.get(2);
+  PVector center = new PVector((a.x+b.x)/2, (a.y+b.y)/2);
+  Collections.sort(quad, new CWComparator(center));
+  
+  // 2 - Sort by upper left most corner
+  PVector origin = new PVector(0, 0);
+  float distToOrigin = 1000;
+
+  for (PVector p : quad) {
+    if (p.dist(origin) < distToOrigin) distToOrigin = p.dist(origin);
+  }
+  while (quad.get(0).dist(origin) != distToOrigin){
+    Collections.rotate(quad, 1);
+  }
+  return quad;
 }
