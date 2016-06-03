@@ -27,7 +27,7 @@ void setup(){
   cam = new Capture(this, cameras[0]);
   cam.start();
   }*/
-  img = loadImage("board1.jpg");
+  img = loadImage("board4.jpg");
   noLoop();
 }
 
@@ -56,9 +56,14 @@ void draw() {
     for(int i : quads.get(0)) {
       linesToDraw.add(linesIntersection.get(i));
     }
+    
+    
+    //lineToDraw contient les lignes du meilleur quad
+    
     drawBorderLines(linesToDraw, sobelIm.width);
-    ArrayList<PVector> intersections = getIntersections(linesToDraw);
-    t2d = new TwoDThreeD(Math.round(intersections.get(1).x - intersections.get(0).x), Math.round(intersections.get(1).y - intersections.get(2).y));
+    ArrayList<PVector> intersections = getIntersections(linesToDraw, sobelIm.width, sobelIm.height);
+    //t2d = new TwoDThreeD(Math.round(intersections.get(1).x - intersections.get(0).x), Math.round(intersections.get(1).y - intersections.get(2).y));
+    t2d = new TwoDThreeD(sobelIm.width, sobelIm.height);
     PVector rot = t2d.get3DRotations(sortCorners(intersections));
     println("rx = " + Math.toDegrees(rot.x));
     println("ry = " + Math.toDegrees(rot.y));
@@ -341,7 +346,7 @@ PVector intersection(PVector line1, PVector line2) {
   return new PVector(x, y);
 }
 
-ArrayList<PVector> getIntersections(List<PVector> lines) {
+ArrayList<PVector> getIntersections(List<PVector> lines, int imageWidth, int imageHeight) {
   ArrayList<PVector> intersections = new ArrayList<PVector>();
   for (int i = 0; i < lines.size() - 1; i++) {
     PVector line1 = lines.get(i);
@@ -349,15 +354,39 @@ ArrayList<PVector> getIntersections(List<PVector> lines) {
       PVector line2 = lines.get(j);
       // compute the intersection and add it to 'intersections'
       PVector intersection = intersection(line1, line2);
-      intersections.add(intersection);
+      //println("intersection i = (" + intersection.x + "," + intersection.y + ")");
+      //Keep only intersection on image
+      if(intersection.x > 0 && intersection.x < imageWidth && intersection.y > 0 && intersection.y < imageHeight) {
+        intersections.add(intersection);
+      }
     }
   }
   return intersections;
 }
 
 void drawIntersections(ArrayList<PVector> intersections) {
+  int t = 0;
   for(PVector i : intersections) {
-    fill(255, 128, 0);
+    println("t = " + t + " i = (" + i.x + "," + i.y + ")");
+    switch(t) {
+      case 0 :
+        fill(#08ddf1);//bleu clair
+      break;
+      case 1:
+        fill(#9f1916);//rouge foncé
+      break;
+      case 2:
+        fill(#ffd700);//jaune
+      break;
+      case 3:
+        fill(#000000);//noir
+      break;
+      default:
+        fill(#ffffff);//blanc
+      break;
+    }
+    ++t;
+    //fill(255, 128, 0);
     ellipse(i.x, i.y, 10, 10);
   }
 }
