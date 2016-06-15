@@ -34,11 +34,10 @@ class Board{
     fill(118);
     lights();
     translate(width/2, height/2, 0);
-    if(isShiftClicked){
-      rotateX(-PI/2.0);
-    } else {
-      rotateX(radians(rotX));
-      rotateZ(radians(rotZ));
+    rotateX(-PI/2.0);
+    if(!isShiftClicked){
+      rotateX(rotX);
+      rotateZ((rotZ));
     }
     box(boardSize, boardThick, boardSize);
   }

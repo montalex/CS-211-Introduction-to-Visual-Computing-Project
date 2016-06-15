@@ -40,7 +40,7 @@ class Ball {
       friction.mult(-1);
       friction.normalize();
       friction.mult(frictionMagnitude);
-      gravity.set(sin(radians(board.rotZ))*GRAVITY, 0, -sin(radians(board.rotX))*GRAVITY);
+      gravity.set(sin(board.rotZ)*GRAVITY, 0, -sin(board.rotX)*GRAVITY);
       velocity.add(gravity);
       velocity.add(friction);
       location.add(velocity);
@@ -75,20 +75,16 @@ class Ball {
      if(location.x > board.boardSize/2) {
        velocity.x = velocity.x * -REBOUND_COEF;
        location.x = board.boardSize/2;
-       losePoints();
      } else if(location.x < -board.boardSize/2){
        velocity.x = velocity.x * -REBOUND_COEF;
        location.x = -board.boardSize/2;
-       losePoints();
      }
      if(location.z > board.boardSize/2) {
        velocity.z = velocity.z * -REBOUND_COEF;
        location.z = board.boardSize/2;
-       losePoints();
      } else if(location.z < -board.boardSize/2){
        velocity.z = velocity.z * -REBOUND_COEF;
        location.z = -board.boardSize/2;
-       losePoints();
      }
    }
    
@@ -106,7 +102,6 @@ class Ball {
        location.z = location.z + Vdist.z / (ballRadius+cylinder.cylinderRadius);
        PVector normal = new PVector(location.x - cylinder.location.x, 0, location.z - cylinder.location.z).normalize();
        velocity = PVector.sub(velocity, normal.mult(PVector.dot(velocity, normal) * 2));
-       winPoints();
      }
    }
 }
