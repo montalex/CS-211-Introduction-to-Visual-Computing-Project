@@ -12,8 +12,8 @@ class Ball {
   private PVector gravity; // Gravity vector.
   private PVector friction; // Friction vector.
   private float ballRadius; // Ball radius.
-  private final float GRAVITY = 0.15; // Gravity constant.
-  private final float REBOUND_COEF = 0.5; // Rebound coeeficient.
+  private final float GRAVITY = 0.8; // Gravity constant.
+  private final float REBOUND_COEF = 0.7; // Rebound coeeficient.
   private final float frictionMagnitude = 0.01; // Friction force magnitude = normal Force * mu (1 * 0.01).
   
   /* 

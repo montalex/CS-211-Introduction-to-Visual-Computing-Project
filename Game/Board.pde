@@ -7,9 +7,8 @@
 * Represents the playing board.
 */
 class Board{
-  private float rotX; // Rotational angle (in degrees) in X coordinate.
-  private float rotZ; // Rotational angle (in degrees) in Z coordinate.
-  private float speed; // Rotational speed of board.
+  private float rotX; // Rotational angle in X coordinate.
+  private float rotZ; // Rotational angle in Z coordinate.
   private final float boardSize = 500; // Size of squared board.
   private final float boardThick = 20; // Thickness of board.
 
@@ -21,7 +20,6 @@ class Board{
   Board(){
     rotX = 0.0;
     rotZ = 0.0;
-    speed = 1.0;
   }
 
   /*
@@ -34,10 +32,11 @@ class Board{
     fill(118);
     lights();
     translate(width/2, height/2, 0);
-    rotateX(-PI/2.0);
-    if(!isShiftClicked){
+    if(isShiftClicked){
+      rotateX(-PI/2.0);
+    } else {
       rotateX(rotX);
-      rotateZ((rotZ));
+      rotateZ(rotZ);
     }
     box(boardSize, boardThick, boardSize);
   }
